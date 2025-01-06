@@ -1,0 +1,15 @@
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "<Your_Connection_String>"
+  },
+  "JWTSecret": "<Your_JWT_Secret>",
+  "Logging": {
+    "LogLevel": {
+      "Default": "Debug",
+      "Microsoft.AspNetCore": "Information"
+    }
+  },
+  "AllowedHosts": "*"
+}
+
+

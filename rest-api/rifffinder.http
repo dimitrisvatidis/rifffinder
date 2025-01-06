@@ -1,0 +1,6 @@
+@rifffinder_HostAddress = http://localhost:5215
+
+GET {{rifffinder_HostAddress}}/rifffinder/
+Accept: application/json
+
+###
