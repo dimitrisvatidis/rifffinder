@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using rifffinder.Data; 
 using rifffinder.Models;
+using rifffinder.Services;
 using System.Security.Claims;
 
 namespace rifffinder.Controllers
@@ -11,59 +10,44 @@ namespace rifffinder.Controllers
     [Route("api/[controller]")]
     public class BandsController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly BandService _bandService;
 
-        public BandsController(AppDbContext context)
+        public BandsController(BandService bandService)
         {
-            _context = context;
+            _bandService = bandService;
         }
 
-        // GET: api/Bands/{id}
         [Authorize]
         [HttpGet("{id}")]
         public async Task<ActionResult<Band>> GetBandById(int id)
         {
-            var band = await _context.Bands.FindAsync(id);
-
+            var band = await _bandService.GetBandByIdAsync(id);
             if (band == null)
             {
                 return NotFound();
             }
-
-            return band;
+            return Ok(band);
         }
 
-        // POST: api/Band
         [Authorize]
         [HttpPost]
         public async Task<ActionResult<Band>> CreateBand(Band band)
         {
             var musicianId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-
             if (musicianId == null)
             {
                 return Unauthorized(new { message = "Invalid token. Musician ID not found." });
             }
 
-            var musician = await _context.Musicians.FindAsync(int.Parse(musicianId));
-
-            if (musician == null)
+            try
             {
-                return BadRequest(new { message = "Musician not found." });
+                var createdBand = await _bandService.CreateBandAsync(band, int.Parse(musicianId));
+                return CreatedAtAction(nameof(GetBandById), new { id = createdBand.Id }, createdBand);
             }
-
-            if (musician.BandId.HasValue)
+            catch (InvalidOperationException ex)
             {
-                return BadRequest(new { message = "You are already part of a band." });
+                return BadRequest(new { message = ex.Message });
             }
-
-            _context.Bands.Add(band);
-            await _context.SaveChangesAsync();
-
-            musician.BandId = band.Id;
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(GetBandById), new { id = band.Id }, band);
         }
 
         [Authorize]
@@ -76,18 +60,15 @@ namespace rifffinder.Controllers
                 return Unauthorized(new { message = "Musician ID not found in token." });
             }
 
-            int musicianId = int.Parse(musicianIdClaim.Value);
-            var musician = await _context.Musicians.FindAsync(musicianId);
-
-            if (musician == null || musician.BandId == null)
+            try
             {
-                return BadRequest(new { message = "You are not part of a band." });
+                await _bandService.LeaveBandAsync(int.Parse(musicianIdClaim.Value));
+                return Ok(new { message = "You have successfully left the band." });
             }
-
-            musician.BandId = null;
-            await _context.SaveChangesAsync();
-
-            return Ok(new { message = "You have successfully left the band." });
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
     }
 }

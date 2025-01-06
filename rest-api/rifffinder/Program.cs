@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using rifffinder.Data;
+using rifffinder.Repositories;
+using rifffinder.Services;
 using System.Text;
 
 namespace rifffinder
@@ -25,6 +27,15 @@ namespace rifffinder
 
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+            builder.Services.AddScoped<BandRepository, BandRepository>();
+
+            builder.Services.AddScoped<BandService, BandService>();
+
+            builder.Services.AddScoped<MusicianRepository, MusicianRepository>();
+
+            builder.Services.AddScoped<LoginService, LoginService>();
+            builder.Services.AddScoped<MusicianService, MusicianService>();
 
             builder.Configuration
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
