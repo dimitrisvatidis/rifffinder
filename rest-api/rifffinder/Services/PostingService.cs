@@ -2,15 +2,18 @@
 using rifffinder.Repositories;
 using rifffinder.DTOs;
 using rifffinder.DTO;
+using System.Security.Claims;
 namespace rifffinder.Services
 {
     public class PostingService
     {
         private readonly PostingRepository _postingRepository;
+        private readonly MusicianRepository _musicianRepository;
 
-        public PostingService(PostingRepository postingRepository)
+        public PostingService(PostingRepository postingRepository, MusicianRepository musicianRepository)
         {
             _postingRepository = postingRepository;
+            _musicianRepository = musicianRepository;
         }
 
         public async Task<IEnumerable<PostingDTO>> GetAllPostingsAsync()
@@ -45,8 +48,14 @@ namespace rifffinder.Services
             };
         }
 
-        public async Task<PostingDTO> CreatePostingAsync(CreatePostingDTO postingDto)
+        public async Task<PostingDTO> CreatePostingAsync(CreatePostingDTO postingDto, int musicianId)
         {
+            var musician = await _musicianRepository.GetMusicianByIdAsync(musicianId);
+            if (musician == null || musician.BandId == null || musician.BandId != postingDto.BandId)
+            {
+                throw new InvalidOperationException("You must belong to the band to create a posting.");
+            }
+
             var posting = new Posting
             {
                 Title = postingDto.Title,

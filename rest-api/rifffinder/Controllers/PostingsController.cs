@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using rifffinder.Services;
 using rifffinder.DTOs;
 using rifffinder.DTO;
+using System.Security.Claims;
 
 namespace rifffinder.Controllers
 {
@@ -42,8 +43,15 @@ namespace rifffinder.Controllers
         [HttpPost]
         public async Task<ActionResult<PostingDTO>> CreatePosting(CreatePostingDTO postingDto)
         {
-            var createdPosting = await _postingService.CreatePostingAsync(postingDto);
+            var musicianId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            if (musicianId == null)
+            {
+                return Unauthorized(new { message = "Musician ID not found in token." });
+            }
+
+            var createdPosting = await _postingService.CreatePostingAsync(postingDto, int.Parse(musicianId));
             return CreatedAtAction(nameof(GetPostingById), new { id = createdPosting.Id }, createdPosting);
         }
+
     }
 }

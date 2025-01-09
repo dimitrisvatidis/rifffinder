@@ -42,10 +42,7 @@ namespace rifffinder.Controllers
             return Ok(requests);
         }
 
-
-        [Authorize]
-        [HttpGet("{id}")]
-        public async Task<ActionResult<RequestWithMusicianDTO>> GetRequestById(int id)
+        private async Task<ActionResult<RequestWithMusicianDTO>> GetRequestById(int id)
         {
             var request = await _requestService.GetRequestByIdAsync(id);
             if (request == null)
@@ -68,14 +65,20 @@ namespace rifffinder.Controllers
 
             int musicianId = int.Parse(musicianIdClaim.Value);
             var createdRequest = await _requestService.CreateRequestAsync(musicianId, requestDto);
-            return CreatedAtAction(nameof(GetRequestById), new { id = createdRequest.Id }, createdRequest);
+            return Ok(new { message = "Request created." });
         }
 
         [Authorize]
         [HttpPatch("{id}/accept")]
         public async Task<IActionResult> AcceptRequest(int id)
         {
-            await _requestService.AcceptRequestAsync(id);
+            var musicianIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            if (musicianIdClaim == null)
+            {
+                return Unauthorized(new { message = "Musician ID not found in token." });
+            }
+
+            await _requestService.AcceptRequestAsync(id, int.Parse(musicianIdClaim));
             return Ok(new { message = "Request accepted." });
         }
 
@@ -83,16 +86,14 @@ namespace rifffinder.Controllers
         [HttpPatch("{id}/deny")]
         public async Task<IActionResult> DenyRequest(int id)
         {
-            await _requestService.DenyRequestAsync(id);
-            return Ok(new { message = "Request denied." });
-        }
+            var musicianIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            if (musicianIdClaim == null)
+            {
+                return Unauthorized(new { message = "Musician ID not found in token." });
+            }
 
-        [Authorize]
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteRequest(int id)
-        {
-            await _requestService.DeleteRequestAsync(id);
-            return NoContent();
+            await _requestService.DenyRequestAsync(id, int.Parse(musicianIdClaim));
+            return Ok(new { message = "Request denied." });
         }
     }
 }

@@ -49,6 +49,23 @@ namespace rifffinder.Services
             var posting = await _postingRepository.GetPostingByIdAsync(requestDto.PostingId);
             if (posting == null) throw new InvalidOperationException("Invalid PostingId.");
 
+            var musician = await _musicianRepository.GetMusicianByIdAsync(musicianId);
+            if (musician == null)
+            {
+                throw new InvalidOperationException("Musician not found.");
+            }
+
+            if (musician.BandId != null)
+            {
+                throw new InvalidOperationException("You cannot send a request while already belonging to a band.");
+            }
+
+            var existingRequest = await _requestRepository.GetRequestsByPostingIdAndMusicianIdAsync(requestDto.PostingId, musicianId);
+            if (existingRequest != null)
+            {
+                throw new InvalidOperationException("You have already sent a request for this posting.");
+            }
+
             var newRequest = new Request
             {
                 MusicianId = musicianId,
@@ -69,10 +86,16 @@ namespace rifffinder.Services
             };
         }
 
-        public async Task AcceptRequestAsync(int id)
+        public async Task AcceptRequestAsync(int id, int musicianId)
         {
             var request = await _requestRepository.GetRequestByIdAsync(id);
             if (request == null) throw new InvalidOperationException("Request not found.");
+
+            var currentUser = await _musicianRepository.GetMusicianByIdAsync(musicianId);
+            if (currentUser == null || currentUser.BandId != request.BandId)
+            {
+                throw new UnauthorizedAccessException("You are not authorized to accept this request.");
+            }
 
             request.Status = RequestStatus.Accepted;
             await _requestRepository.UpdateRequestAsync(request);
@@ -95,18 +118,19 @@ namespace rifffinder.Services
             }
         }
 
-        public async Task DenyRequestAsync(int id)
+        public async Task DenyRequestAsync(int id, int musicianId)
         {
             var request = await _requestRepository.GetRequestByIdAsync(id);
             if (request == null) throw new InvalidOperationException("Request not found.");
 
+            var currentUser = await _musicianRepository.GetMusicianByIdAsync(musicianId);
+            if (currentUser == null || currentUser.BandId != request.BandId)
+            {
+                throw new UnauthorizedAccessException("You are not authorized to deny this request.");
+            }
+
             request.Status = RequestStatus.Denied;
             await _requestRepository.UpdateRequestAsync(request);
-        }
-
-        public async Task DeleteRequestAsync(int id)
-        {
-            await _requestRepository.DeleteRequestAsync(id);
         }
     }
 }

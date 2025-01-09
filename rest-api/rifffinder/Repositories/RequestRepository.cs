@@ -45,5 +45,11 @@ namespace rifffinder.Repositories
                 await _context.SaveChangesAsync();
             }
         }
+
+        public async Task<Request?> GetRequestsByPostingIdAndMusicianIdAsync(int postingId, int musicianId)
+        {
+            return await _context.Requests
+                .FirstOrDefaultAsync(r => r.PostingId == postingId && r.MusicianId == musicianId);
+        }
     }
 }
