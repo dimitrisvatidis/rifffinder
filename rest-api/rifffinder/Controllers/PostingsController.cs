@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using rifffinder.Data; 
-using rifffinder.Models;
+using rifffinder.Services;
+using rifffinder.DTOs;
+using rifffinder.DTO;
 
 namespace rifffinder.Controllers
 {
@@ -10,64 +10,40 @@ namespace rifffinder.Controllers
     [Route("api/[controller]")]
     public class PostingsController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly PostingService _postingService;
 
-        public PostingsController(AppDbContext context)
+        public PostingsController(PostingService postingService)
         {
-            _context = context;
+            _postingService = postingService;
         }
 
         [Authorize]
-            [HttpGet]
-            public async Task<ActionResult<IEnumerable<object>>> GetAllPostings()
-            {
-                var postings = await _context.Postings
-                    .Include(p => p.Band)
-                    .Select(p => new
-                    {
-                        p.Id,
-                        p.Title,
-                        p.Text,
-                        p.InstrumentWanted,
-                        p.Status,
-                        p.BandId,
-                        BandName = p.Band != null ? p.Band.Name : "Unknown"
-                    })
-                    .ToListAsync();
-
-                return Ok(postings);
-            }
-
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<PostingDTO>>> GetAllPostings()
+        {
+            var postings = await _postingService.GetAllPostingsAsync();
+            return Ok(postings);
+        }
 
         [Authorize]
         [HttpGet("{id}")]
-        public async Task<ActionResult<Posting>> GetPostingById(int id)
+        public async Task<ActionResult<PostingDTO>> GetPostingById(int id)
         {
-            var posting = await _context.Postings.FindAsync(id);
-
+            var posting = await _postingService.GetPostingByIdAsync(id);
             if (posting == null)
             {
                 return NotFound();
             }
 
-            return posting;
+            return Ok(posting);
         }
 
         [Authorize]
         [HttpPost]
-        public async Task<ActionResult<Posting>> CreatePosting(Posting posting)
+        public async Task<ActionResult<PostingDTO>> CreatePosting(CreatePostingDTO postingDto)
         {
-            // Check if the band exists
-            var band = await _context.Bands.FindAsync(posting.BandId);
-            if (band == null)
-            {
-                return BadRequest("Band does not exist.");
-            }
-
-            _context.Postings.Add(posting);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(GetPostingById), new { id = posting.Id }, posting);
+            var createdPosting = await _postingService.CreatePostingAsync(postingDto);
+            return CreatedAtAction(nameof(GetPostingById), new { id = createdPosting.Id }, createdPosting);
         }
     }
 }

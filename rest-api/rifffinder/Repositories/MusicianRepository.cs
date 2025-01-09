@@ -32,5 +32,10 @@ public class MusicianRepository
         return musician;
     }
 
- 
+
+    public async Task UpdateMusicianAsync(Musician musician)
+    {
+        _context.Entry(musician).State = EntityState.Modified;
+        await _context.SaveChangesAsync();
+    }
 }

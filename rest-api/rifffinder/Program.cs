@@ -33,7 +33,11 @@ namespace rifffinder
             builder.Services.AddScoped<BandService, BandService>();
 
             builder.Services.AddScoped<MusicianRepository, MusicianRepository>();
+            builder.Services.AddScoped<PostingRepository, PostingRepository>();
+            builder.Services.AddScoped<RequestRepository, RequestRepository>();
 
+            builder.Services.AddScoped<PostingService, PostingService>();
+            builder.Services.AddScoped<RequestService, RequestService>();
             builder.Services.AddScoped<LoginService, LoginService>();
             builder.Services.AddScoped<MusicianService, MusicianService>();
 

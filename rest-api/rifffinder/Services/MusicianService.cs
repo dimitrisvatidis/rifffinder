@@ -1,5 +1,6 @@
 ﻿using rifffinder.Models;
 using rifffinder.Repositories;
+using rifffinder.DTO;
 
 public class MusicianService 
 {
@@ -36,20 +37,32 @@ public class MusicianService
             BandId = m.BandId
         });
     }
-
-    public async Task<MusicianDTO> CreateMusicianAsync(MusicianDTO musicianDto)
+    public async Task<CreateMusicianDTO> CreateMusicianAsync(CreateMusicianDTO musicianDto)
     {
+        var existingMusician = await _musicianRepository.GetMusicianByEmailAsync(musicianDto.Email);
+        if (existingMusician != null)
+        {
+            throw new InvalidOperationException("A musician with the same email already exists.");
+        }
+
+        if (string.IsNullOrWhiteSpace(musicianDto.Password))
+        {
+            throw new InvalidOperationException("Password cannot be empty.");
+        }
+
         var musician = new Musician
         {
             Name = musicianDto.Name,
             Surname = musicianDto.Surname,
             Email = musicianDto.Email,
-            Password = BCrypt.Net.BCrypt.HashPassword("default"),
+            Password = BCrypt.Net.BCrypt.HashPassword(musicianDto.Password),
             Instrument = musicianDto.Instrument,
-            BandId = musicianDto.BandId
         };
+
         await _musicianRepository.CreateMusicianAsync(musician);
         return musicianDto;
     }
+
+
 }
 

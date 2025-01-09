@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using rifffinder.DTO;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -14,7 +15,7 @@ public class MusiciansController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateMusician([FromBody] MusicianDTO musicianDto)
+    public async Task<IActionResult> CreateMusician([FromBody] CreateMusicianDTO musicianDto)
     {
         var createdMusician = await _musicianService.CreateMusicianAsync(musicianDto);
         return CreatedAtAction(nameof(GetMusician), new { id = createdMusician.Id }, createdMusician);

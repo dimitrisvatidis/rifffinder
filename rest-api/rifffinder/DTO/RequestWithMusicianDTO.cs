@@ -1,6 +1,6 @@
 ﻿namespace rifffinder.Models
 {
-    public class RequestWithMusicianDto
+    public class RequestWithMusicianDTO
     {
         public int Id { get; set; }
         public int MusicianId { get; set; }
