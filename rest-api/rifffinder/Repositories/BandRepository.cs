@@ -22,5 +22,15 @@ namespace rifffinder.Repositories
             await _context.SaveChangesAsync();
             return band;
         }
+
+        public async Task DeleteBandAsync(int bandId)
+        {
+            var band = await _context.Bands.FindAsync(bandId);
+            if (band != null)
+            {
+                _context.Bands.Remove(band);
+                await _context.SaveChangesAsync();
+            }
+        }
     }
 }
