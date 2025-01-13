@@ -1,26 +1,29 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import Footer from "../components/Footer";
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import Footer from '../components/Footer';
 
 const CreateBand = () => {
-  const [bandData, setBandData] = useState({ name: "", bio: "", genre: "" });
+  const [bandData, setBandData] = useState({ name: '', bio: '', genre: '' });
   const [errors, setErrors] = useState({});
   const [musician, setMusician] = useState(null);
-  const [serverError, setServerError] = useState("");
+  const [serverError, setServerError] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchMusician = async () => {
       try {
-        const token = localStorage.getItem("jwtToken");
-        const response = await axios.get("https://localhost:7290/api/musicians/me", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const token = localStorage.getItem('jwtToken');
+        const response = await axios.get(
+          'https://localhost:7290/api/musicians/me',
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
 
         setMusician(response.data);
       } catch (error) {
-        console.error("Error fetching musician details:", error);
+        console.error('Error fetching musician details:', error);
       }
     };
 
@@ -30,13 +33,13 @@ const CreateBand = () => {
   const validate = () => {
     const validationErrors = {};
     if (!bandData.name.trim()) {
-      validationErrors.name = "Band name is required.";
+      validationErrors.name = 'Band name is required.';
     }
     if (!bandData.bio.trim()) {
-      validationErrors.bio = "Band bio is required.";
+      validationErrors.bio = 'Band bio is required.';
     }
     if (!bandData.genre.trim()) {
-      validationErrors.genre = "Band genre is required.";
+      validationErrors.genre = 'Band genre is required.';
     }
     setErrors(validationErrors);
     return Object.keys(validationErrors).length === 0;
@@ -45,7 +48,7 @@ const CreateBand = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setBandData((prevData) => ({ ...prevData, [name]: value }));
-    setErrors((prevErrors) => ({ ...prevErrors, [name]: "" })); 
+    setErrors((prevErrors) => ({ ...prevErrors, [name]: '' }));
   };
 
   const handleSubmit = async (e) => {
@@ -56,15 +59,15 @@ const CreateBand = () => {
     }
 
     try {
-      const token = localStorage.getItem("jwtToken");
-      await axios.post("https://localhost:7290/api/bands", bandData, {
+      const token = localStorage.getItem('jwtToken');
+      await axios.post('https://localhost:7290/api/bands', bandData, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      navigate("/my-band");
+      navigate('/my-band');
     } catch (error) {
-      console.error("Error creating band:", error);
-      setServerError("Failed to create the band. Please try again.");
+      console.error('Error creating band:', error);
+      setServerError('Failed to create the band. Please try again.');
     }
   };
 
@@ -73,7 +76,9 @@ const CreateBand = () => {
   }
 
   if (musician.bandId) {
-    return <div>You are already part of a band and cannot create a new one.</div>;
+    return (
+      <div>You are already part of a band and cannot create a new one.</div>
+    );
   }
 
   return (
@@ -92,7 +97,6 @@ const CreateBand = () => {
                   </div>
                 )}
                 <form onSubmit={handleSubmit}>
-                  
                   <div className="mb-3">
                     <label className="form-label">Name:</label>
                     <input
@@ -100,24 +104,26 @@ const CreateBand = () => {
                       name="name"
                       value={bandData.name}
                       onChange={handleInputChange}
-                      className={`form-control ${errors.name ? "is-invalid" : ""}`}
+                      className={`form-control ${errors.name ? 'is-invalid' : ''}`}
                     />
-                    {errors.name && <div className="invalid-feedback">{errors.name}</div>}
+                    {errors.name && (
+                      <div className="invalid-feedback">{errors.name}</div>
+                    )}
                   </div>
 
-                  
                   <div className="mb-3">
                     <label className="form-label">Bio:</label>
                     <textarea
                       name="bio"
                       value={bandData.bio}
                       onChange={handleInputChange}
-                      className={`form-control ${errors.bio ? "is-invalid" : ""}`}
+                      className={`form-control ${errors.bio ? 'is-invalid' : ''}`}
                     ></textarea>
-                    {errors.bio && <div className="invalid-feedback">{errors.bio}</div>}
+                    {errors.bio && (
+                      <div className="invalid-feedback">{errors.bio}</div>
+                    )}
                   </div>
 
-                 
                   <div className="mb-3">
                     <label className="form-label">Genre:</label>
                     <input
@@ -125,9 +131,11 @@ const CreateBand = () => {
                       name="genre"
                       value={bandData.genre}
                       onChange={handleInputChange}
-                      className={`form-control ${errors.genre ? "is-invalid" : ""}`}
+                      className={`form-control ${errors.genre ? 'is-invalid' : ''}`}
                     />
-                    {errors.genre && <div className="invalid-feedback">{errors.genre}</div>}
+                    {errors.genre && (
+                      <div className="invalid-feedback">{errors.genre}</div>
+                    )}
                   </div>
 
                   <button type="submit" className="btn btn-primary w-100">

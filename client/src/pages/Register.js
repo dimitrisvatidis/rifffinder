@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import Footer from '../components/Footer'; 
+import Footer from '../components/Footer';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -29,29 +29,24 @@ const Register = () => {
   const validate = () => {
     const validationErrors = {};
 
-    
     if (!formData.name.trim()) {
       validationErrors.name = 'Name is required.';
     }
 
-    
     if (!formData.surname.trim()) {
       validationErrors.surname = 'Surname is required.';
     }
 
-    
     if (!formData.email) {
       validationErrors.email = 'Email is required.';
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       validationErrors.email = 'Please enter a valid email address.';
     }
 
-    
     if (!formData.password) {
       validationErrors.password = 'Password is required.';
     }
 
-    
     if (!formData.instrument.trim()) {
       validationErrors.instrument = 'Instrument is required.';
     }
@@ -68,7 +63,10 @@ const Register = () => {
     }
 
     try {
-      const response = await axios.post('https://localhost:7290/api/musicians', formData);
+      const response = await axios.post(
+        'https://localhost:7290/api/musicians',
+        formData
+      );
       console.log('Registration successful:', response.data);
 
       setSuccessMessage('Registration successful! Redirecting to login...');
@@ -77,7 +75,7 @@ const Register = () => {
 
       setTimeout(() => navigate('/login'), 3000);
     } catch (err) {
-      if (err.response && err.response.status === 500) { 
+      if (err.response && err.response.status === 500) {
         setServerError('A user with this email already exists.');
       } else {
         setServerError('Failed to register. Please try again.');
@@ -103,7 +101,6 @@ const Register = () => {
               </div>
             )}
             <form onSubmit={handleSubmit}>
-              
               <div className="mb-3">
                 <label htmlFor="name" className="form-label">
                   Name
@@ -116,10 +113,11 @@ const Register = () => {
                   value={formData.name}
                   onChange={handleChange}
                 />
-                {errors.name && <div className="invalid-feedback">{errors.name}</div>}
+                {errors.name && (
+                  <div className="invalid-feedback">{errors.name}</div>
+                )}
               </div>
 
-              
               <div className="mb-3">
                 <label htmlFor="surname" className="form-label">
                   Surname
@@ -132,10 +130,11 @@ const Register = () => {
                   value={formData.surname}
                   onChange={handleChange}
                 />
-                {errors.surname && <div className="invalid-feedback">{errors.surname}</div>}
+                {errors.surname && (
+                  <div className="invalid-feedback">{errors.surname}</div>
+                )}
               </div>
 
-              
               <div className="mb-3">
                 <label htmlFor="email" className="form-label">
                   Email
@@ -148,10 +147,11 @@ const Register = () => {
                   value={formData.email}
                   onChange={handleChange}
                 />
-                {errors.email && <div className="invalid-feedback">{errors.email}</div>}
+                {errors.email && (
+                  <div className="invalid-feedback">{errors.email}</div>
+                )}
               </div>
 
-              
               <div className="mb-3">
                 <label htmlFor="password" className="form-label">
                   Password
@@ -164,10 +164,11 @@ const Register = () => {
                   value={formData.password}
                   onChange={handleChange}
                 />
-                {errors.password && <div className="invalid-feedback">{errors.password}</div>}
+                {errors.password && (
+                  <div className="invalid-feedback">{errors.password}</div>
+                )}
               </div>
 
-              
               <div className="mb-3">
                 <label htmlFor="instrument" className="form-label">
                   Instrument
@@ -180,7 +181,9 @@ const Register = () => {
                   value={formData.instrument}
                   onChange={handleChange}
                 />
-                {errors.instrument && <div className="invalid-feedback">{errors.instrument}</div>}
+                {errors.instrument && (
+                  <div className="invalid-feedback">{errors.instrument}</div>
+                )}
               </div>
 
               <div className="d-grid">
@@ -191,7 +194,10 @@ const Register = () => {
             </form>
             <p className="text-center mt-3">
               Already have an account?{' '}
-              <Link to="/login" className="text-primary text-decoration-underline">
+              <Link
+                to="/login"
+                className="text-primary text-decoration-underline"
+              >
                 Login here
               </Link>
             </p>

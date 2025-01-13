@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { useParams } from "react-router-dom";
-import "bootstrap/dist/css/bootstrap.min.css";
-import Footer from "../components/Footer";
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import { useParams } from 'react-router-dom';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import Footer from '../components/Footer';
 
 const Musician = () => {
   const { id } = useParams();
@@ -13,7 +13,7 @@ const Musician = () => {
   useEffect(() => {
     const fetchMusician = async () => {
       try {
-        const token = localStorage.getItem("jwtToken");
+        const token = localStorage.getItem('jwtToken');
         const headers = { Authorization: `Bearer ${token}` };
 
         let musicianResponse;
@@ -25,7 +25,7 @@ const Musician = () => {
           );
         } else {
           musicianResponse = await axios.get(
-            "https://localhost:7290/api/musicians/me",
+            'https://localhost:7290/api/musicians/me',
             { headers }
           );
         }
@@ -42,8 +42,8 @@ const Musician = () => {
           setBandName(bandResponse.data.name);
         }
       } catch (error) {
-        console.error("Error fetching musician or band details:", error);
-        setError("Failed to fetch musician details.");
+        console.error('Error fetching musician or band details:', error);
+        setError('Failed to fetch musician details.');
       }
     };
 
@@ -76,7 +76,7 @@ const Musician = () => {
           <div className="col-md-8">
             <div className="card shadow-sm">
               <div className="card-header bg-dark text-white text-center">
-                <h2>{id ? "Musician Profile" : "My Profile"}</h2>
+                <h2>{id ? 'Musician Profile' : 'My Profile'}</h2>
               </div>
               <div className="card-body">
                 <p className="mb-3">
@@ -93,7 +93,7 @@ const Musician = () => {
                 </p>
                 {musician.bandId ? (
                   <p className="mb-3">
-                    <strong>Band:</strong>{" "}
+                    <strong>Band:</strong>{' '}
                     {bandName ? (
                       <span>{bandName}</span>
                     ) : (
@@ -101,7 +101,9 @@ const Musician = () => {
                     )}
                   </p>
                 ) : (
-                  <p className="text-muted">This musician is not part of a band.</p>
+                  <p className="text-muted">
+                    This musician is not part of a band.
+                  </p>
                 )}
               </div>
             </div>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
-import Footer from '../components/Footer'; 
+import Footer from '../components/Footer';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const Login = () => {
@@ -13,15 +13,13 @@ const Login = () => {
 
   const validate = () => {
     const validationErrors = {};
-    
-    
+
     if (!email) {
       validationErrors.email = 'Email is required.';
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       validationErrors.email = 'Please enter a valid email address.';
     }
-    
-    
+
     if (!password) {
       validationErrors.password = 'Password is required.';
     }
@@ -83,7 +81,9 @@ const Login = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
-                {errors.email && <div className="invalid-feedback">{errors.email}</div>}
+                {errors.email && (
+                  <div className="invalid-feedback">{errors.email}</div>
+                )}
               </div>
               <div className="mb-3">
                 <label htmlFor="password" className="form-label">
@@ -96,7 +96,9 @@ const Login = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
-                {errors.password && <div className="invalid-feedback">{errors.password}</div>}
+                {errors.password && (
+                  <div className="invalid-feedback">{errors.password}</div>
+                )}
               </div>
               <div className="d-grid">
                 <button type="submit" className="btn btn-primary">
@@ -106,7 +108,10 @@ const Login = () => {
             </form>
             <p className="text-center mt-3">
               Don’t have an account?{' '}
-              <Link to="/register" className="text-primary text-decoration-underline">
+              <Link
+                to="/register"
+                className="text-primary text-decoration-underline"
+              >
                 Register here
               </Link>
             </p>
