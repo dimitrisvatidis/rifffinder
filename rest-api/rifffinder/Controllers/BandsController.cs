@@ -22,10 +22,12 @@ namespace rifffinder.Controllers
         public async Task<ActionResult<Band>> GetBandById(int id)
         {
             var band = await _bandService.GetBandByIdAsync(id);
+
             if (band == null)
             {
                 return NotFound();
             }
+
             return Ok(band);
         }
 
@@ -34,6 +36,7 @@ namespace rifffinder.Controllers
         public async Task<ActionResult<Band>> CreateBand(Band band)
         {
             var musicianId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+
             if (musicianId == null)
             {
                 return Unauthorized(new { message = "Invalid token. Musician ID not found." });

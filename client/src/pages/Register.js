@@ -13,8 +13,9 @@ const Register = () => {
     instrument: '',
   });
 
-  const [error, setError] = useState('');
+  const [errors, setErrors] = useState({});
   const [successMessage, setSuccessMessage] = useState('');
+  const [serverError, setServerError] = useState('');
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -25,20 +26,62 @@ const Register = () => {
     });
   };
 
+  const validate = () => {
+    const validationErrors = {};
+
+    
+    if (!formData.name.trim()) {
+      validationErrors.name = 'Name is required.';
+    }
+
+    
+    if (!formData.surname.trim()) {
+      validationErrors.surname = 'Surname is required.';
+    }
+
+    
+    if (!formData.email) {
+      validationErrors.email = 'Email is required.';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      validationErrors.email = 'Please enter a valid email address.';
+    }
+
+    
+    if (!formData.password) {
+      validationErrors.password = 'Password is required.';
+    }
+
+    
+    if (!formData.instrument.trim()) {
+      validationErrors.instrument = 'Instrument is required.';
+    }
+
+    setErrors(validationErrors);
+    return Object.keys(validationErrors).length === 0;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!validate()) {
+      return;
+    }
 
     try {
       const response = await axios.post('https://localhost:7290/api/musicians', formData);
       console.log('Registration successful:', response.data);
 
       setSuccessMessage('Registration successful! Redirecting to login...');
-      setError('');
+      setServerError('');
+      setErrors({});
 
       setTimeout(() => navigate('/login'), 3000);
     } catch (err) {
-      console.error('Error registering musician:', err);
-      setError('Failed to register. Please try again.');
+      if (err.response && err.response.status === 500) { 
+        setServerError('A user with this email already exists.');
+      } else {
+        setServerError('Failed to register. Please try again.');
+      }
       setSuccessMessage('');
     }
   };
@@ -49,9 +92,9 @@ const Register = () => {
         <div className="card shadow-sm" style={{ width: '400px' }}>
           <div className="card-body">
             <h2 className="card-title text-center mb-4">Register</h2>
-            {error && (
+            {serverError && (
               <div className="alert alert-danger" role="alert">
-                {error}
+                {serverError}
               </div>
             )}
             {successMessage && (
@@ -60,6 +103,7 @@ const Register = () => {
               </div>
             )}
             <form onSubmit={handleSubmit}>
+              
               <div className="mb-3">
                 <label htmlFor="name" className="form-label">
                   Name
@@ -68,12 +112,14 @@ const Register = () => {
                   type="text"
                   id="name"
                   name="name"
-                  className="form-control"
+                  className={`form-control ${errors.name ? 'is-invalid' : ''}`}
                   value={formData.name}
                   onChange={handleChange}
-                  required
                 />
+                {errors.name && <div className="invalid-feedback">{errors.name}</div>}
               </div>
+
+              
               <div className="mb-3">
                 <label htmlFor="surname" className="form-label">
                   Surname
@@ -82,12 +128,14 @@ const Register = () => {
                   type="text"
                   id="surname"
                   name="surname"
-                  className="form-control"
+                  className={`form-control ${errors.surname ? 'is-invalid' : ''}`}
                   value={formData.surname}
                   onChange={handleChange}
-                  required
                 />
+                {errors.surname && <div className="invalid-feedback">{errors.surname}</div>}
               </div>
+
+              
               <div className="mb-3">
                 <label htmlFor="email" className="form-label">
                   Email
@@ -96,12 +144,14 @@ const Register = () => {
                   type="email"
                   id="email"
                   name="email"
-                  className="form-control"
+                  className={`form-control ${errors.email ? 'is-invalid' : ''}`}
                   value={formData.email}
                   onChange={handleChange}
-                  required
                 />
+                {errors.email && <div className="invalid-feedback">{errors.email}</div>}
               </div>
+
+              
               <div className="mb-3">
                 <label htmlFor="password" className="form-label">
                   Password
@@ -110,12 +160,14 @@ const Register = () => {
                   type="password"
                   id="password"
                   name="password"
-                  className="form-control"
+                  className={`form-control ${errors.password ? 'is-invalid' : ''}`}
                   value={formData.password}
                   onChange={handleChange}
-                  required
                 />
+                {errors.password && <div className="invalid-feedback">{errors.password}</div>}
               </div>
+
+              
               <div className="mb-3">
                 <label htmlFor="instrument" className="form-label">
                   Instrument
@@ -124,12 +176,13 @@ const Register = () => {
                   type="text"
                   id="instrument"
                   name="instrument"
-                  className="form-control"
+                  className={`form-control ${errors.instrument ? 'is-invalid' : ''}`}
                   value={formData.instrument}
                   onChange={handleChange}
-                  required
                 />
+                {errors.instrument && <div className="invalid-feedback">{errors.instrument}</div>}
               </div>
+
               <div className="d-grid">
                 <button type="submit" className="btn btn-primary">
                   Register

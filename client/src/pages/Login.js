@@ -7,11 +7,35 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [errors, setErrors] = useState({});
+  const [serverError, setServerError] = useState('');
   const navigate = useNavigate();
+
+  const validate = () => {
+    const validationErrors = {};
+    
+    
+    if (!email) {
+      validationErrors.email = 'Email is required.';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      validationErrors.email = 'Please enter a valid email address.';
+    }
+    
+    
+    if (!password) {
+      validationErrors.password = 'Password is required.';
+    }
+
+    setErrors(validationErrors);
+    return Object.keys(validationErrors).length === 0;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!validate()) {
+      return;
+    }
 
     try {
       const response = await axios.post('https://localhost:7290/api/login', {
@@ -25,7 +49,7 @@ const Login = () => {
 
       navigate('/');
     } catch (err) {
-      setError('Invalid email or password');
+      setServerError('Invalid email or password');
     }
   };
 
@@ -42,9 +66,9 @@ const Login = () => {
         <div className="card shadow-sm" style={{ width: '400px' }}>
           <div className="card-body">
             <h2 className="card-title text-center mb-4">Login</h2>
-            {error && (
+            {serverError && (
               <div className="alert alert-danger" role="alert">
-                {error}
+                {serverError}
               </div>
             )}
             <form onSubmit={handleSubmit}>
@@ -55,11 +79,11 @@ const Login = () => {
                 <input
                   type="email"
                   id="email"
-                  className="form-control"
+                  className={`form-control ${errors.email ? 'is-invalid' : ''}`}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  required
                 />
+                {errors.email && <div className="invalid-feedback">{errors.email}</div>}
               </div>
               <div className="mb-3">
                 <label htmlFor="password" className="form-label">
@@ -68,11 +92,11 @@ const Login = () => {
                 <input
                   type="password"
                   id="password"
-                  className="form-control"
+                  className={`form-control ${errors.password ? 'is-invalid' : ''}`}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  required
                 />
+                {errors.password && <div className="invalid-feedback">{errors.password}</div>}
               </div>
               <div className="d-grid">
                 <button type="submit" className="btn btn-primary">

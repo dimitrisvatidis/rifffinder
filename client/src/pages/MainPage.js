@@ -19,6 +19,7 @@ const MainPage = () => {
   const [belongsToBand, setBelongsToBand] = useState(false);
   const [loading, setLoading] = useState(true);
   const [musician, setMusician] = useState(null);
+  const [userRequests, setUserRequests] = useState([]); 
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -34,6 +35,9 @@ const MainPage = () => {
         const bandId = musicianResponse.data.bandId;
         setBelongsToBand(bandId !== null);
         setMusician(musicianResponse.data);
+
+        const requestsResponse = await axios.get("https://localhost:7290/api/requests", { headers });
+        setUserRequests(requestsResponse.data.map((req) => req.postingId));
 
         setLoading(false);
       } catch (error) {
@@ -57,6 +61,7 @@ const MainPage = () => {
       );
 
       alert("Request sent successfully!");
+      setUserRequests((prev) => [...prev, postingId]); 
     } catch (error) {
       console.error("Error sending request:", error);
       alert("Unable to send request.");
@@ -70,7 +75,7 @@ const MainPage = () => {
   if (loading) return <p>Loading...</p>;
 
   return (
-  <div className="d-flex flex-column min-vh-100 bg-light">
+    <div className="d-flex flex-column min-vh-100 bg-light">
       <div className="container mt-4 flex-grow-1">
         <div className="text-center mb-4">
           <h1 className="fw-bold">🎵 Available Postings</h1>
@@ -104,13 +109,13 @@ const MainPage = () => {
                       <strong>Instrument Wanted:</strong> {posting.instrumentWanted}
                     </p>
 
-                    <p className="card-text text-secondary mb-3">
-                      {posting.text}
-                    </p>
+                    <p className="card-text text-secondary mb-3">{posting.text}</p>
 
                     <p className="card-text">
                       <strong>Status:</strong>{" "}
-                      <span className={`badge ${posting.status === 0 ? "bg-success" : "bg-secondary"}`}>
+                      <span
+                        className={`badge ${posting.status === 0 ? "bg-success" : "bg-secondary"}`}
+                      >
                         {getStatusText(posting.status)}
                       </span>
                     </p>
@@ -119,7 +124,7 @@ const MainPage = () => {
                       <span className="badge bg-info align-self-start mb-2">Your Posting</span>
                     )}
 
-                    <div className="mt-auto d-flex justify-content-between align-items-center">
+                    <div className="mt-auto d-flex flex-column gap-2">
                       <Link
                         to={`/bands/${posting.bandId}`}
                         className="btn btn-outline-primary btn-sm"
@@ -128,12 +133,24 @@ const MainPage = () => {
                       </Link>
 
                       {musician?.bandId !== posting.bandId && (
-                        <button
-                          onClick={() => handleInterestedClick(posting.id)}
-                          className="btn btn-success btn-sm"
-                        >
-                          🤝 I'm Interested
-                        </button>
+                        <>
+                          <button
+                            onClick={() => handleInterestedClick(posting.id)}
+                            className="btn btn-success btn-sm"
+                            disabled={userRequests.includes(posting.id)} 
+                          >
+                            {userRequests.includes(posting.id) ? "Request Sent" : "🤝 I'm Interested"}
+                          </button>
+
+                          {userRequests.includes(posting.id) && (
+                            <Link
+                              to="/requests"
+                              className="btn btn-secondary btn-sm"
+                            >
+                              📄 View My Requests
+                            </Link>
+                          )}
+                        </>
                       )}
                     </div>
                   </div>
