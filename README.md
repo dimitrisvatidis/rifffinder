@@ -10,7 +10,7 @@ RiffFinder is a music collaboration platform designed to help musicians connect,
 
 Ensure you have the following installed:
 
-1. [.NET 7.0 SDK](https://dotnet.microsoft.com/download)
+1. [.NET 8.0 SDK](https://dotnet.microsoft.com/download)
 2. [Node.js (LTS)](https://nodejs.org/)
 3. [SQL Server](https://www.microsoft.com/en-us/sql-server)
 
