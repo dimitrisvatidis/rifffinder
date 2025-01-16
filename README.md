@@ -31,7 +31,7 @@ Ensure you have the following installed:
 3. Configure environment variables:
    - Create a `appsettings.json` file in the `rest-api` directory based on the `appsettings.example.json`.
 
-4. Apply migrations and seed the database:
+4. Create a database called rifffinder in your SQL server and apply migrations and seed the database:
    ```bash
    dotnet ef database update
    dotnet run --seed
