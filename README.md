@@ -20,7 +20,7 @@ Ensure you have the following installed:
 
 1. Go to rest-api folder:
    ```bash
-   cd rifffinder/rest-api
+   cd rifffinder/rest-api/rifffinder
    ```
 
 2. Install dependencies:
@@ -39,7 +39,7 @@ Ensure you have the following installed:
 
 5. Run the backend:
    ```bash
-   dotnet run
+   dotnet run --launch-profile "https"
    ```
 
 ---

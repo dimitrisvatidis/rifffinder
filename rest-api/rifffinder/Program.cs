@@ -94,19 +94,19 @@ namespace rifffinder
             using var scope = app.Services.CreateScope();
             var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-            if (!context.Musicians.Any())
-            {
-                context.Musicians.AddRange(
-                    new Musician { Name = "John", Surname = "Doe", Email = "john.doe@example.com", Instrument = "Guitar", Password = BCrypt.Net.BCrypt.HashPassword("password") },
-                    new Musician { Name = "Jane", Surname = "Smith", Email = "jane.smith@example.com", Instrument = "Drums", Password = BCrypt.Net.BCrypt.HashPassword("password") }
-                );
-            }
-
             if (!context.Bands.Any())
             {
                 context.Bands.AddRange(
                     new Band { Name = "The Rockers", Genre = "Rock", Bio = "We rock the stage!" },
                     new Band { Name = "Jazz Masters", Genre = "Jazz", Bio = "Smooth and classy jazz tunes." }
+                );
+            }
+
+            if (!context.Musicians.Any())
+            {
+                context.Musicians.AddRange(
+                    new Musician { Name = "John", Surname = "Doe", Email = "john.doe@example.com", Instrument = "Guitar", Password = BCrypt.Net.BCrypt.HashPassword("password"), BandId = 1 },
+                    new Musician { Name = "Jane", Surname = "Smith", Email = "jane.smith@example.com", Instrument = "Drums", Password = BCrypt.Net.BCrypt.HashPassword("password"), BandId = 2 }
                 );
             }
 

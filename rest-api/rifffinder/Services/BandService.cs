@@ -32,13 +32,10 @@ namespace rifffinder.Services
                 throw new InvalidOperationException("Invalid musician or already in a band.");
             }
 
-            // Delete all pending requests for the musician
             await _requestRepository.DeleteRequestsByMusicianIdAsync(musicianId);
 
-            // Create the band using the repository
             var createdBand = await _bandRepository.CreateBandAsync(band);
 
-            // Associate the musician with the newly created band
             musician.BandId = createdBand.Id;
             await _musicianRepository.UpdateMusicianAsync(musician);
 
@@ -59,7 +56,6 @@ namespace rifffinder.Services
             musician.BandId = null;
             await _musicianRepository.UpdateMusicianAsync(musician);
 
-            // Check if there are any musicians left in the band
             var remainingMusicians = await _musicianRepository.GetMusiciansByBandIdAsync(bandId);
             if (!remainingMusicians.Any())
             {
