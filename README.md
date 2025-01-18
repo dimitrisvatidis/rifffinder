@@ -83,5 +83,5 @@ Each musician has a profile that displays their name, instrument, and band (if a
 ## **API Documentation**
 
 ### **Swagger**
-- Local: `http://localhost:7290`
+- Local: `http://localhost:7290/swagger/index.html`
 
